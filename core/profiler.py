@@ -176,9 +176,13 @@ def profile_column(series: pd.Series) -> Dict[str, Any]:
 def _count_outliers_iqr(s: pd.Series) -> int:
     if len(s) < 4:
         return 0
-    q1, q3 = s.quantile(0.25), s.quantile(0.75)
-    iqr = q3 - q1
-    return int(((s < q1 - 1.5 * iqr) | (s > q3 + 1.5 * iqr)).sum())
+    try:
+        s = s.astype(float)
+        q1, q3 = s.quantile(0.25), s.quantile(0.75)
+        iqr = q3 - q1
+        return int(((s < q1 - 1.5 * iqr) | (s > q3 + 1.5 * iqr)).sum())
+    except Exception:
+        return 0
 
 
 def full_profile(df: pd.DataFrame) -> Dict[str, Any]:

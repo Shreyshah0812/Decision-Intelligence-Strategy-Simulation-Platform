@@ -210,7 +210,7 @@ def render_sidebar():
                 label + disabled_marker,
                 key=f"nav_{key}",
                 disabled=is_locked or is_model_locked,
-                use_container_width=True,
+                width="stretch",
             ):
                 ss_set("page", key)
 
@@ -277,7 +277,7 @@ def page_upload(fn):
 
         df = ss_get("df")
         st.markdown("#### Preview (first 5 rows)")
-        st.dataframe(df.head(), use_container_width=True)
+        st.dataframe(df.head(), width="stretch")
 
         st.markdown("<div class='separator'></div>", unsafe_allow_html=True)
         st.markdown("#### Configure (optional — engine will auto-detect)")
@@ -313,7 +313,7 @@ def page_upload(fn):
             ss_set("revenue_col", None if rev_col == "— None —" else rev_col)
 
         st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("🚀  Run Decision Engine", use_container_width=False):
+        if st.button("🚀  Run Decision Engine", width="content"):
             _run_full_pipeline(fn)
 
 
@@ -430,16 +430,16 @@ def page_profile(fn):
                 "Mean/Top": str(p.get("mean", p.get("top_value", "—"))),
                 "Std/Freq%": str(p.get("std", str(p.get("top_freq_pct", "")) + "%")),
             })
-        st.dataframe(pd.DataFrame(schema_rows), use_container_width=True, hide_index=True)
+        st.dataframe(pd.DataFrame(schema_rows), width="stretch", hide_index=True)
 
     with tab2:
         fig = fn["missing_heatmap"](df)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
     with tab3:
         col_pick = st.selectbox("Select column to plot", df.columns.tolist(), key="dist_col")
         fig = fn["distribution_plot"](df[col_pick], col_pick)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
         # Quick stats
         p = profile["col_profiles"][col_pick]
@@ -462,7 +462,7 @@ def page_profile(fn):
             if len(selected_cols) >= 2:
                 fig = fn["correlation_heatmap"](df, selected_cols)
                 if fig:
-                    st.plotly_chart(fig, use_container_width=True)
+                    st.plotly_chart(fig, width="stretch")
         else:
             st.info("Need at least 2 numeric columns for correlation analysis.")
 
@@ -472,7 +472,7 @@ def page_profile(fn):
         st.markdown("#### Statistical Drift Summary")
         fig = fn["drift_chart"](drift)
         if fig:
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width="stretch")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -505,13 +505,13 @@ def page_model(fn):
         fi = model_result.get("feature_importance")
         if fi is not None and not fi.empty:
             fig = fn["feature_importance_chart"](fi)
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width="stretch")
 
             st.markdown("#### Top Features Table")
             display_fi = fi.copy()
             display_fi["importance"] = display_fi["importance"].round(4)
             display_fi.index = range(1, len(display_fi) + 1)
-            st.dataframe(display_fi.head(15), use_container_width=True)
+            st.dataframe(display_fi.head(15), width="stretch")
         else:
             st.info("Feature importance not available for this model type.")
 
@@ -519,13 +519,13 @@ def page_model(fn):
         mc = model_result.get("model_comparison", [])
         if mc:
             fig = fn["model_comparison_chart"](mc)
-            st.plotly_chart(fig, use_container_width=True)
-            st.dataframe(pd.DataFrame(mc), use_container_width=True, hide_index=True)
+            st.plotly_chart(fig, width="stretch")
+            st.dataframe(pd.DataFrame(mc), width="stretch", hide_index=True)
 
     with tab3:
         y = model_result["y"]
         fig = fn["target_distribution"](y, target_col or "Target")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
         vc = y.value_counts()
         c1, c2 = st.columns(2)
@@ -580,7 +580,7 @@ def page_simulation(fn):
             )
             feature_deltas[feat] = float(delta)
 
-        run_sim = st.button("⟳  Run Simulation", use_container_width=False)
+        run_sim = st.button("⟳  Run Simulation", width="content")
 
     with col_right:
         st.markdown("#### Simulation Output")
@@ -658,7 +658,7 @@ def page_simulation(fn):
                     height=220,
                     margin=dict(l=20, r=20, t=20, b=30),
                 )
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig, width="stretch")
         else:
             st.markdown("""
             <div style='background:#13161f; border:1px solid #1e2330; border-radius:8px; padding:20px; text-align:center; color:#6b7591; font-size:11px;'>
@@ -697,7 +697,7 @@ def page_ranking(fn):
     # Ranking chart
     fig = fn["strategy_ranking_chart"](strategies)
     if fig:
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
     # Full table
     st.markdown("#### All Strategies")
@@ -716,7 +716,7 @@ def page_ranking(fn):
             "Score": s["composite_score"],
         })
 
-    st.dataframe(pd.DataFrame(table_data), use_container_width=True, hide_index=True)
+    st.dataframe(pd.DataFrame(table_data), width="stretch", hide_index=True)
 
     # Scoring note
     st.caption("Composite score = Financial impact (40%) + Risk (20%) + Time-to-implement (20%) + Model confidence (20%)")
@@ -756,7 +756,7 @@ def page_report(fn):
                 data=pdf_bytes,
                 file_name=f"decis_report_{filename.replace('.','_')}.pdf",
                 mime="application/pdf",
-                use_container_width=False,
+                width="content",
             )
         except Exception as e:
             st.error(f"PDF generation error: {e}")
@@ -852,7 +852,7 @@ def page_report(fn):
     st.markdown("### 5 · Model Comparison")
     mc = model_result.get("model_comparison", [])
     if mc:
-        st.dataframe(pd.DataFrame(mc), use_container_width=True, hide_index=True)
+        st.dataframe(pd.DataFrame(mc), width="stretch", hide_index=True)
 
 
 # ─────────────────────────────────────────────────────────────────────────────

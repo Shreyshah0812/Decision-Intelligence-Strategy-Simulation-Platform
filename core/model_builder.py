@@ -96,11 +96,11 @@ def get_candidates(problem_type: str) -> List[Tuple[str, Any]]:
         candidates.append(("Random Forest", RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1)))
         candidates.append(("Gradient Boosting", GradientBoostingClassifier(n_estimators=100, random_state=42)))
         if HAS_XGB:
-            candidates.append(("XGBoost", XGBClassifier(n_estimators=100, random_state=42, verbosity=0, use_label_encoder=False, eval_metric="logloss")))
+            candidates.append(("XGBoost", XGBClassifier(n_estimators=100, random_state=42, verbosity=0, eval_metric="logloss")))
         if HAS_LGB:
             candidates.append(("LightGBM", LGBMClassifier(n_estimators=100, random_state=42, verbose=-1)))
     else:
-        candidates.append(("Ridge Regression", Ridge(random_state=42) if hasattr(Ridge, "random_state") else Ridge()))
+        candidates.append(("Ridge Regression", Ridge()))
         candidates.append(("Random Forest", RandomForestRegressor(n_estimators=100, random_state=42, n_jobs=-1)))
         candidates.append(("Gradient Boosting", GradientBoostingRegressor(n_estimators=100, random_state=42)))
         if HAS_XGB:

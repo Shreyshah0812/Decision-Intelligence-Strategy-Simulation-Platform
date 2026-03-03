@@ -43,7 +43,7 @@ def _is_datetime_col(series: pd.Series) -> bool:
         return False
     try:
         sample = series.dropna().head(50).astype(str)
-        parsed = pd.to_datetime(sample, infer_datetime_format=True, errors="coerce")
+        parsed = pd.to_datetime(sample, errors="coerce")
         return parsed.notna().mean() > 0.7
     except Exception:
         return False
@@ -344,7 +344,7 @@ def detect_drift(df: pd.DataFrame, col_types: Dict[str, str], datetime_col: Opti
     df = df.copy()
     if datetime_col and datetime_col in df.columns:
         try:
-            df[datetime_col] = pd.to_datetime(df[datetime_col], infer_datetime_format=True, errors="coerce")
+            df[datetime_col] = pd.to_datetime(df[datetime_col], errors="coerce")
             df_sorted = df.dropna(subset=[datetime_col]).sort_values(datetime_col)
             mid = len(df_sorted) // 2
             group_a = df_sorted.iloc[:mid]

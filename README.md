@@ -22,7 +22,7 @@ This creates `sample_customer_data.csv` — 2,000 rows of realistic SaaS custome
 streamlit run app.py
 ```
 
-The app opens at [**http://localhost:8501**](https://decision-intelligence-strategy-simulation-platform-jujv7n2wpy2.streamlit.app/)
+The app opens at **(https://decision-intelligence-strategy-simulation-platform-jujv7n2wpy2.streamlit.app/)**
 
 ---
 
